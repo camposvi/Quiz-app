@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import quizCompleteImg from '../../assets/quiz-complete.png';
 import QUESTIONS from '../../utils/questions.js';
 import QuestionTimer from './QuestionTimer.jsx';
@@ -7,11 +7,15 @@ const Quiz = () => {
   const activeQuestionIndex = userAnswers.length;
 
   const isQuisCompleted = activeQuestionIndex === QUESTIONS.length;
-  const handleSelectAnswer = (selectedAnswer) => {
+  const handleSelectAnswer = useCallback((selectedAnswer) => {
     setUserAnswers((prevUserAnswers) => {
       return [...prevUserAnswers, selectedAnswer];
     });
-  };
+  }, []);
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null);
+  }, [handleSelectAnswer]);
   if (isQuisCompleted) {
     return (
       <div id="summary">
@@ -27,8 +31,9 @@ const Quiz = () => {
     <div id="quiz">
       <div id="question">
         <QuestionTimer
+          key={activeQuestionIndex}
           timeout={10000}
-          onTimeout={() => handleSelectAnswer(null)}
+          onTimeout={handleSkipAnswer}
         />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
 
